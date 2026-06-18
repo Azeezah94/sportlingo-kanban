@@ -15,7 +15,23 @@ export interface Task {
   status: Status;
   priority: Priority;
   due_date?: string;
+  labels?: string[];
   user_id: string;
   created_at: string;
-  labels?: string[];
+}
+
+export interface Comment {
+  id: string;
+  task_id: string;
+  user_id: string;
+  content: string;
+  created_at: string;
+}
+
+export interface Activity {
+  id: string;
+  task_id: string;
+  user_id: string;
+  action: string;
+  created_at: string;
 }

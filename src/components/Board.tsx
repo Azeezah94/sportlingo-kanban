@@ -13,23 +13,21 @@ const COLUMNS: { id: Status; label: string; color: string }[] = [
 interface Props {
   tasks: Task[];
   onMove: (id: string, status: Status) => void;
-  onUpdate: (id: string, updates: Partial<Task>) => void;
+  onUpdate: (id: string, updates: Partial<Task>, activity?: string) => void;
   onDelete: (id: string) => void;
   onCreate: (t: Omit<Task, 'id' | 'user_id' | 'created_at'>) => void;
+  userId: string;
 }
 
-export default function Board({ tasks, onMove, onUpdate, onDelete, onCreate }: Props) {
+export default function Board({ tasks, onMove, onUpdate, onDelete, onCreate, userId }: Props) {
   const [draggingId, setDraggingId] = useState<string | null>(null);
-
   const onDragStart = (start: any) => setDraggingId(start.draggableId);
-
   const onDragEnd = (result: DropResult) => {
     setDraggingId(null);
     if (!result.destination) return;
     const newStatus = result.destination.droppableId as Status;
-    const taskId = result.draggableId;
-    const task = tasks.find(t => t.id === taskId);
-    if (task && task.status !== newStatus) onMove(taskId, newStatus);
+    const task = tasks.find(t => t.id === result.draggableId);
+    if (task && task.status !== newStatus) onMove(result.draggableId, newStatus);
   };
 
   return (
@@ -38,16 +36,7 @@ export default function Board({ tasks, onMove, onUpdate, onDelete, onCreate }: P
         {COLUMNS.map(col => (
           <Droppable droppableId={col.id} key={col.id}>
             {(provided, snapshot) => (
-              <Column
-                column={col}
-                tasks={tasks.filter(t => t.status === col.id)}
-                provided={provided}
-                isDraggingOver={snapshot.isDraggingOver}
-                draggingId={draggingId}
-                onUpdate={onUpdate}
-                onDelete={onDelete}
-                onCreate={onCreate}
-              />
+              <Column column={col} tasks={tasks.filter(t => t.status === col.id)} provided={provided} isDraggingOver={snapshot.isDraggingOver} draggingId={draggingId} onUpdate={onUpdate} onDelete={onDelete} onCreate={onCreate} userId={userId} />
             )}
           </Droppable>
         ))}
