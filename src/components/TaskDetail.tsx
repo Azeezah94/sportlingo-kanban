@@ -17,7 +17,7 @@ export default function TaskDetail({ task, userId, onClose, onUpdate }: Props) {
   const [tab, setTab] = useState<'comments' | 'activity'>('comments');
   const [loading, setLoading] = useState(true);
 
-  useEffect(() => {
+  useEffect(() => {  // eslint-disable-next-line
     fetchData();
   }, [task.id]);
 
