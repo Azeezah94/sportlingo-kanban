@@ -22,15 +22,13 @@ const PRIORITY_CONFIG = {
 };
 
 function DueDateBadge({ due_date, status }: { due_date: string; status: string }) {
-  const todayStr = new Date().toISOString().split('T')[0];
+  const n = new Date(); const todayStr = `${n.getFullYear()}-${String(n.getMonth()+1).padStart(2,'0')}-${String(n.getDate()).padStart(2,'0')}`;
   const done = status === 'done';
   const overdue = !done && due_date < todayStr;
   const isToday = due_date === todayStr;
   // due soon = tomorrow or day after
-  const tomorrow = new Date(); tomorrow.setDate(tomorrow.getDate() + 1);
-  const tomorrowStr = tomorrow.toISOString().split('T')[0];
-  const dayAfter = new Date(); dayAfter.setDate(dayAfter.getDate() + 2);
-  const dayAfterStr = dayAfter.toISOString().split('T')[0];
+  const tm = new Date(); tm.setDate(tm.getDate()+1); const tomorrowStr = `${tm.getFullYear()}-${String(tm.getMonth()+1).padStart(2,'0')}-${String(tm.getDate()).padStart(2,'0')}`;
+  const da = new Date(); da.setDate(da.getDate()+2); const dayAfterStr = `${da.getFullYear()}-${String(da.getMonth()+1).padStart(2,'0')}-${String(da.getDate()).padStart(2,'0')}`;
   const dueSoon = !done && !overdue && (due_date === tomorrowStr || due_date === dayAfterStr);
   let color = 'var(--text-muted)', bg = 'var(--surface2)';
   if (overdue) { color = 'var(--red)'; bg = 'var(--red-dim)'; }
