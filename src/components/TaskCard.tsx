@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { Draggable } from '@hello-pangea/dnd';
 import { Calendar, Trash2, Pencil, AlertCircle, ArrowUp, ArrowRight, ArrowDown, MessageSquare } from 'lucide-react';
 import { Task } from '../supabaseClient';
-import { format, isPast, isToday, differenceInDays } from 'date-fns';
+import { format } from 'date-fns';
 import TaskModal from './TaskModal';
 import TaskDetail from './TaskDetail';
 
@@ -22,18 +22,27 @@ const PRIORITY_CONFIG = {
 };
 
 function DueDateBadge({ due_date, status }: { due_date: string; status: string }) {
-  const date = new Date(due_date);
+  const todayStr = new Date().toISOString().split('T')[0];
   const done = status === 'done';
-  const today = new Date(); today.setHours(0,0,0,0); const overdue = !done && date < today;
-  const dueSoon = !done && !overdue && differenceInDays(date, new Date()) <= 2;
+  const overdue = !done && due_date < todayStr;
+  const isToday = due_date === todayStr;
+  // due soon = tomorrow or day after
+  const tomorrow = new Date(); tomorrow.setDate(tomorrow.getDate() + 1);
+  const tomorrowStr = tomorrow.toISOString().split('T')[0];
+  const dayAfter = new Date(); dayAfter.setDate(dayAfter.getDate() + 2);
+  const dayAfterStr = dayAfter.toISOString().split('T')[0];
+  const dueSoon = !done && !overdue && (due_date === tomorrowStr || due_date === dayAfterStr);
   let color = 'var(--text-muted)', bg = 'var(--surface2)';
   if (overdue) { color = 'var(--red)'; bg = 'var(--red-dim)'; }
-  else if (dueSoon) { color = 'var(--yellow)'; bg = 'var(--yellow-dim)'; }
+  else if (dueSoon || isToday) { color = 'var(--yellow)'; bg = 'var(--yellow-dim)'; }
   else if (done) { color = 'var(--green)'; bg = 'var(--green-dim)'; }
+  // Format display: parse as local date
+  const [y,m,d] = due_date.split('-').map(Number);
+  const displayDate = new Date(y, m-1, d);
   return (
     <span style={{ display: 'inline-flex', alignItems: 'center', gap: 4, padding: '2px 8px', borderRadius: 20, background: bg, color, fontSize: 11, fontWeight: 500 }}>
       {overdue && <AlertCircle size={10} />}<Calendar size={10} />
-      {isToday(date) ? 'Today' : format(date, 'MMM d')}
+      {isToday ? 'Today' : format(displayDate, 'MMM d')}
     </span>
   );
 }

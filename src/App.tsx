@@ -87,7 +87,7 @@ export default function App() {
     done: tasks.filter(t => t.status === 'done').length,
     overdue: tasks.filter(t => {
       if (!t.due_date || t.status === 'done') return false;
-      const due = new Date(t.due_date); const today = new Date(); today.setHours(0,0,0,0); return due < today;
+      const todayStr = new Date().toISOString().split("T")[0]; return t.due_date < todayStr;
     }).length
   };
 
