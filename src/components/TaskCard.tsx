@@ -24,7 +24,7 @@ const PRIORITY_CONFIG = {
 function DueDateBadge({ due_date, status }: { due_date: string; status: string }) {
   const date = new Date(due_date);
   const done = status === 'done';
-  const overdue = !done && isPast(date) && !isToday(date);
+  const today = new Date(); today.setHours(0,0,0,0); const overdue = !done && date < today;
   const dueSoon = !done && !overdue && differenceInDays(date, new Date()) <= 2;
   let color = 'var(--text-muted)', bg = 'var(--surface2)';
   if (overdue) { color = 'var(--red)'; bg = 'var(--red-dim)'; }
